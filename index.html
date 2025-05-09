@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Conferência de CTO</title>
+    <style>
+        body {
+            background-color: #1f1f1f;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 90%;
+            margin: auto;
+            padding: 20px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+        }
+
+        input, button, select {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        input[type="text"], input[type="number"], input[type="date"] {
+            width: 100%;
+            background-color: #333;
+            color: #e0e0e0;
+        }
+
+        button {
+            background-color: #00c853;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #00e676;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+            background-color: #3a3a3a;
+        }
+
+        th, td {
+            border: 1px solid #555;
+            padding: 10px;
+            text-align: center;
+        }
+
+        thead {
+            background-color: #424242;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .nav-buttons {
+            margin-bottom: 20px;
+        }
+
+        .nav-buttons button {
+            margin-right: 10px;
+            background-color: #2196f3;
+        }
+
+        .nav-buttons button.active {
+            background-color: #0d47a1;
+        }
+
+        .search-input {
+            width: 100%;
+            background-color: #333;
+            color: #e0e0e0;
+        }
+
+        #mensagemSemRegistros {
+            color: #ccc;
+            margin-top: 10px;
+        }
+
+        h3 {
+            margin-top: 30px;
+            border-bottom: 1px solid #555;
+            padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333; /* Um tom mais claro de cinza - DESTAQUE */
+            padding: 10px 15px; /* Adicionar um pouco de espaçamento interno - DESTAQUE */
+            border-radius: 5px; /* Deixar as bordas um pouco arredondadas - DESTAQUE */
+        }
+
+        h3 button {
+            background-color: #f44336;
+        }
+
+        h3 button:hover {
+            background-color: #d32f2f;
+        }
+
+        .edit-row {
+            background-color: #444;
+        }
+
+        .edit-row input[type="text"], .edit-row input[type="number"], .edit-row input[type="date"], .edit-row select {
+            background-color: #555;
+            color: #e0e0e0;
+        }
+
+        .edit-actions button {
+            margin-right: 5px;
+        }
+
+        .edit-actions button:first-child {
+            background-color: #ff9800; /* Cor para o botão de salvar edição */
+        }
+
+        .edit-actions button:first-child:hover {
+            background-color: #f57c00;
+        }
+
+        .edit-actions button:last-child {
+            background-color: #f44336; /* Cor para o botão de cancelar edição */
+        }
+
+        #telaGerenciamento label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        #listaUsuariosInternos, #listaUsuariosExternos, #listaCidades {
+            margin-top: 10px;
+            border: 1px solid #555;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #listaUsuariosInternos li, #listaUsuariosExternos li, #listaCidades li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid #666;
+        }
+
+        #listaUsuariosInternos li:last-child, #listaUsuariosExternos li:last-child, #listaCidades li:last-child {
+            border-bottom: none;
+        }
+
+        #listaUsuariosInternos li button, #listaUsuariosExternos li button, #listaCidades li button {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        #listaUsuariosInternos li button:hover, #listaUsuariosExternos li button:hover, #listaCidades li button:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-buttons">
+            <button id="btnCadastro" onclick="mostrarTela('cadastro')" class="active">Cadastrar Conferência</button>
+            <button id="btnPesquisa" onclick="mostrarTela('pesquisa')">Pesquisar Registros</button>
+            <button id="btnGerenciamento" onclick="mostrarTela('gerenciamento')">Gerenciar Dados</button>
+        </div>
+
+        <div id="telaCadastro">
+            <h2>Conferência de CTO</h2>
+
+            <label>Nome da CTO:</label>
+            <input type="text" id="cto" />
+
+            <label>Quantidade de Portas:</label>
+            <input type="number" id="qtdPortas" />
+
+            <label>Técnico Interno:</label>
+            <select id="tecnicoInterno"></select>
+
+            <label>Técnico Externo:</label>
+            <select id="tecnicoExterno"></select>
+
+            <label>Cidade:</label>
+            <select id="cidade"></select>
+
+            <label>Data:</label>
+            <input type="date" id="data" />
+
+            <button onclick="gerarLinhas()">Gerar Linhas</button>
+
+            <table id="tabela">
+                <thead>
+                    <tr>
+                        <th>Porta</th>
+                        <th>Cliente</th>
+                        <th>Status</th>
+                        <th>Salvar</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <button onclick="salvarConferencias()">Salvar Conferências</button>
+        </div>
+
+        <div id="telaPesquisa" class="hidden">
+            <h2>Pesquisar Registros</h2>
+            <input type="text" id="busca" placeholder="Buscar por qualquer campo..." class="search-input" oninput="filtrarRegistros()" />
+            <div id="tabelaRegistros"></div>
+            <p id="mensagemSemRegistros"></p>
+        </div>
+
+        <div id="telaGerenciamento" class="hidden">
+            <h2>Gerenciar Dados</h2>
+
+            <h3>Usuários Internos</h3>
+            <label>Adicionar Usuário Interno:</label>
+            <input type="text" id="novoUsuarioInterno" />
+            <button onclick="adicionarUsuario('interno')">Adicionar</button>
+            <ul id="listaUsuariosInternos"></ul>
+
+            <h3>Usuários Externos</h3>
+            <label>Adicionar Usuário Externo:</label>
+            <input type="text" id="novoUsuarioExterno" />
+            <button onclick="adicionarUsuario('externo')">Adicionar</button>
+            <ul id="listaUsuariosExternos"></ul>
+
+            <h3>Cidades</h3>
+            <label>Adicionar Cidade:</label>
+            <input type="text" id="novaCidade" />
+            <button onclick="adicionarCidade()">Adicionar</button>
+            <ul id="listaCidades"></ul>
+        </div>
+    </div>
+
+    <script>
+        let editingId = null;
+
+        // Funções para mostrar/ocultar telas
+        function mostrarTela(tela) {
+            const cadastro = document.getElementById("telaCadastro");
+            const pesquisa = document.getElementById("telaPesquisa");
+            const gerenciamento = document.getElementById("telaGerenciamento");
+            const btnCadastro = document.getElementById("btnCadastro");
+            const btnPesquisa = document.getElementById("btnPesquisa");
+            const btnGerenciamento = document.getElementById("btnGerenciamento");
+
+            cadastro.classList.add("hidden");
+            pesquisa.classList.add("hidden");
+            gerenciamento.classList.add("hidden");
+            btnCadastro.classList.remove("active");
+            btnPesquisa.classList.remove("active");
+            btnGerenciamento.classList.remove("active");
+
+            if (tela === "cadastro") {
+                cadastro.classList.remove("hidden");
+                btnCadastro.classList.add("active");
+                carregarOpcoesSelecao(); // Carrega as opções ao mostrar a tela de cadastro
+            } else if (tela === "pesquisa") {
+                pesquisa.classList.remove("hidden");
+                btnPesquisa.classList.add("active");
+                filtrarRegistros();
+            } else if (tela === "gerenciamento") {
+                gerenciamento.classList.remove("hidden");
+                btnGerenciamento.classList.add("active");
+                carregarDadosGerenciamento(); // Carrega os dados ao mostrar a tela de gerenciamento
+            }
+        }
+
+        // Funções de Cadastro de Conferência
+        function gerarLinhas() {
+            const qtd = parseInt(document.getElementById("qtdPortas").value);
+            const tbody = document.querySelector("#tabela tbody");
+            tbody.innerHTML = "";
+
+            for (let i = 1; i <= qtd; i++) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${i}</td>
+                    <td><input type="text" /></td>
+                    <td>
+                        <select>
+                            <option>ATIVO</option>
+                            <option>VAGA</option>
+                            <option>SE MUDOU</option>
+                            <option>CANCELADO</option>
+                        </select>
+                    </td>
+                    <td><button onclick="salvarLinha(this)">✔️</button></td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function salvarLinha(btn) {
+            btn.disabled = true;
+            btn.innerText = "✅";
+        }
+
+        function salvarConferencias() {
+            const nomeCTO = document.getElementById("cto").value;
+            const tecnicoInterno = document.getElementById("tecnicoInterno").value;
+            const tecnicoExterno = document.getElementById("tecnicoExterno").value;
+            const cidade = document.getElementById("cidade").value;
+            const data = document.getElementById("data").value;
+            const linhas = document.querySelectorAll("#tabela tbody tr");
+
+            const registros = [];
+
+            linhas.forEach((linha, index) => {
+                const cliente = linha.children[1].querySelector("input").value;
+                const status = linha.children[2].querySelector("select").value;
+
+                registros.push({
+                    porta: index + 1,
+                    cliente: cliente,  // Certifique-se de que 'cliente' está definido corretamente
+                    status: status,    // Certifique-se de que 'status' está definido corretamente
+                    nomeCTO: nomeCTO,
+                    tecnicoInterno: tecnicoInterno,
+                    tecnicoExterno: tecnicoExterno,
+                    cidade: cidade,
+                    data: data,
+                    plotagem: false,
+                    id: `${nomeCTO}-${data}-${index + 1}`
+                });
+            });
+
+            console.log("Dados a serem salvos:", registros); // Para depuração
+
+            let antigos = JSON.parse(localStorage.getItem("conferencias")) || [];
+            antigos = antigos.concat(registros);
+            localStorage.setItem("conferencias", JSON.stringify(antigos));
+
+            alert("Conferências salvas com sucesso!");
+            document.querySelector("#tabela tbody").innerHTML = "";
+            document.getElementById("cto").value = "";
+            document.getElementById("qtdPortas").value = "";
+            document.getElementById("tecnicoInterno").selectedIndex = 0;
+            document.getElementById("tecnicoExterno").selectedIndex = 0;
+            document.getElementById("cidade").selectedIndex = 0;
+            document.getElementById("data").value = "";
+        }
+
+        // Funções de Pesquisa de Registros
+        function filtrarRegistros() {
+            const busca = document.getElementById("busca").value.toLowerCase();
+            const container = document.getElementById("tabelaRegistros");
+            const mensagem = document.getElementById("mensagemSemRegistros");
+
+            const registros = JSON.parse(localStorage.getItem("conferencias")) || [];
+
+            const filtrados = registros.filter(reg =>
+                Object.values(reg).some(v => String(v).toLowerCase().includes(busca))
+            );
+
+            const agrupados = {};
+
+            filtrados.forEach(reg => {
+                const chave = reg.nomeCTO;
+                if (!agrupados[chave]) agrupados[chave] = [];
+                agrupados[chave].push(reg);
+            });
+
+            container.innerHTML = "";
+            mensagem.textContent = ""; // Limpa a mensagem de "Nenhum registro encontrado"
+
+            const nomesCTO = Object.keys(agrupados);
+            if (nomesCTO.length === 0) {
+                mensagem.textContent = "Nenhum registro encontrado.";
+                return;
+            }
+
+
+
+            nomesCTO.forEach(nomeCTO => {
+                const registrosCTO = agrupados[nomeCTO];
+                const { tecnicoInterno, tecnicoExterno, cidade, data } = registrosCTO[0];
+
+                const titulo = document.createElement("h3");
+                titulo.textContent = `CTO: ${nomeCTO} | Cidade: ${cidade} | Téc. Interno: ${tecnicoInterno} | Téc. Externo: ${tecnicoExterno}`;
+
+                const botaoApagarCTO = document.createElement("button");
+                botaoApagarCTO.textContent = "Apagar CTO";
+                botaoApagarCTO.onclick = () => apagarRegistrosCTO(nomeCTO, data);
+                titulo.appendChild(botaoApagarCTO);
+
+                container.appendChild(titulo);
+
+                const tabela = document.createElement("table");
+                let tabelaHTML = `
+                    <thead>
+                        <tr>
+                            <th>Porta</th>
+                            <th>Cliente</th>
+                            <th>Status</th>
+                            <th>Data</th>
+                            <th>Plotagem</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                `;
+                registrosCTO.forEach(reg => {
+                    tabelaHTML += `
+                        <tr id="row-${reg.id}">
+                            <td>${reg.porta}</td>
+                            <td class="cliente">${reg.cliente}</td>
+                            <td class="status">${reg.status}</td>
+                            <td>${reg.data}</td>
+                            <td class="plotagem">
+                                ${editingId === reg.id ?
+                                    `<input type="checkbox" ${reg.plotagem ? 'checked' : ''}>` :
+                                    `<input type="checkbox" ${reg.plotagem ? 'checked' : ''} data-id="${reg.id}" onchange="atualizarPlotagem(this.dataset.id, this.checked)">`
+                                }
+                            </td>
+                            <td>
+                                ${editingId === reg.id ?
+                                    `<div class="edit-actions">
+                                        <button onclick="salvarEdicao('${reg.id}')">Salvar</button>
+                                        <button onclick="cancelarEdicao('${reg.id}')">Cancelar</button>
+                                    </div>` :
+                                    `<button onclick="editarRegistro('${reg.id}')">Editar</button>
+                                     <button onclick="apagarRegistro('${reg.id}')">Apagar</button>`
+                                }
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tabelaHTML += `
+                    </tbody>
+                `;
+                tabela.innerHTML = tabelaHTML;
+                container.appendChild(tabela);
+            });
+
+            // Se houver algum registro sendo editado, destaca a linha
+            if (editingId) {
+                const row = document.getElementById(`row-${editingId}`);
+                if (row) {
+                    row.classList.add("edit-row");
+                    const clienteCell = row.querySelector(".cliente");
+                    const statusCell = row.querySelector(".status");
+                    const plotagemCell = row.querySelector(".plotagem");
+                    const registro = registros.find(r => r.id === editingId);
+
+                    if (clienteCell && statusCell && plotagemCell && registro) {
+                        clienteCell.innerHTML = `<input type="text" value="${registro.cliente}">`;
+                        statusCell.innerHTML = `
+                            <select>
+                                <option value="ATIVO" ${registro.status === 'ATIVO' ? 'selected' : ''}>ATIVO</option>
+                                <option value="VAGA" ${registro.status === 'VAGA' ? 'selected' : ''}>VAGA</option>
+                                <option value="SE MUDOU" ${registro.status === 'SE MUDOU' ? 'selected' : ''}>SE MUDOU</option>
+                                <option value="CANCELADO" ${registro.status === 'CANCELADO' ? 'selected' : ''}>CANCELADO</option>
+                            </select>
+                        `;
+                        plotagemCell.innerHTML = `<input type="checkbox" ${registro.plotagem ? 'checked' : ''}>`;
+                    }
+                }
+            }
+        }
+
+        function apagarRegistro(id) {
+            if (confirm("Tem certeza que deseja apagar este registro?")) {
+                let registros = JSON.parse(localStorage.getItem("conferencias")) || [];
+                registros = registros.filter(reg => reg.id !== id);
+                localStorage.setItem("conferencias", JSON.stringify(registros));
+                filtrarRegistros();
+            }
+        }
+
+        function apagarRegistrosCTO(nomeCTO, data) {
+            if (confirm(`Tem certeza que deseja apagar todos os registros da CTO "${nomeCTO}" cadastrados nesta data?`)) {
+                let registros = JSON.parse(localStorage.getItem("conferencias")) || [];
+                registros = registros.filter(reg => reg.nomeCTO !== nomeCTO || reg.data !== data);
+                localStorage.setItem("conferencias", JSON.stringify(registros));
+                filtrarRegistros();
+            }
+        }
+
+        function editarRegistro(id) {
+            editingId = id;
+            filtrarRegistros(); // Refaz a tabela para mostrar os campos de edição
+        }
+
+        function salvarEdicao(id) {
+            const row = document.getElementById(`row-${id}`);
+            if (row) {
+                const clienteInput = row.querySelector(".cliente input");
+                const statusSelect = row.querySelector(".status select");
+                const plotagemCheckbox = row.querySelector('.plotagem input[type="checkbox"]');
+
+                if (clienteInput && statusSelect && plotagemCheckbox) {
+                    const novoCliente = clienteInput.value;
+                    const novoStatus = statusSelect.value;
+                    const novoPlotagem = plotagemCheckbox.checked;
+
+                    let registros = JSON.parse(localStorage.getItem("conferencias")) || [];
+                    const index = registros.findIndex(reg => reg.id === id);
+
+                    if (index !== -1) {
+                        registros[index].cliente = novoCliente;
+                        registros[index].status = novoStatus;
+                        registros[index].plotagem = novoPlotagem;
+                        localStorage.setItem("conferencias", JSON.stringify(registros));
+                        editingId = null; // Limpa o ID de edição
+                        filtrarRegistros(); // Atualiza a tabela
+                    }
+                }
+            }
+        }
+
+        function cancelarEdicao(id) {
+            editingId = null;
+            filtrarRegistros(); // Refaz a tabela para remover os campos de edição
+        }
+
+        function atualizarPlotagem(id, checked) {
+            let registros = JSON.parse(localStorage.getItem("conferencias")) || [];
+            const index = registros.findIndex(reg => reg.id === id);
+
+            if (index !== -1) {
+                registros[index].plotagem = checked;
+                localStorage.setItem("conferencias", JSON.stringify(registros));
+            }
+        }
+
+        // Funções de Gerenciamento de Dados
+        function adicionarUsuario(tipo) {
+            const inputId = tipo === 'interno' ? 'novoUsuarioInterno' : 'novoUsuarioExterno';
+            const listaId = tipo === 'interno' ? 'listaUsuariosInternos' : 'listaUsuariosExternos';
+            const valor = document.getElementById(inputId).value.trim();
+
+            if (valor) {
+                let dados = JSON.parse(localStorage.getItem(listaId)) || [];
+                dados.push(valor);
+                localStorage.setItem(listaId, JSON.stringify(dados));
+                document.getElementById(inputId).value = '';
+                carregarLista(listaId, dados);
+                carregarOpcoesSelecao(); // Atualiza as opções na tela de cadastro
+            }
+        }
+
+        function adicionarCidade() {
+            const valor = document.getElementById('novaCidade').value.trim();
+            if (valor) {
+                let cidades = JSON.parse(localStorage.getItem('listaCidades')) || [];
+                cidades.push(valor);
+                localStorage.setItem('listaCidades', JSON.stringify(cidades));
+                document.getElementById('novaCidade').value = '';
+                carregarLista('listaCidades', cidades);
+                carregarOpcoesSelecao(); // Atualiza as opções na tela de cadastro
+            }
+        }
+
+        function removerItem(listaId, index) {
+            let dados = JSON.parse(localStorage.getItem(listaId));
+            if (dados && index >= 0 && index < dados.length) {
+                dados.splice(index, 1);
+                localStorage.setItem(listaId, JSON.stringify(dados));
+                carregarLista(listaId, dados);
+                carregarOpcoesSelecao(); // Atualiza as opções na tela de cadastro
+            }
+        }
+
+        function carregarLista(listaId, dados) {
+            const listaElemento = document.getElementById(listaId);
+            listaElemento.innerHTML = '';
+            dados.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                const botaoRemover = document.createElement('button');
+                botaoRemover.textContent = 'Remover';
+                botaoRemover.onclick = () => removerItem(listaId, index);
+                li.appendChild(botaoRemover);
+                listaElemento.appendChild(li);
+            });
+        }
+
+        function carregarDadosGerenciamento() {
+            carregarLista('listaUsuariosInternos', JSON.parse(localStorage.getItem('listaUsuariosInternos')) || []);
+            carregarLista('listaUsuariosExternos', JSON.parse(localStorage.getItem('listaUsuariosExternos')) || []);
+            carregarLista('listaCidades', JSON.parse(localStorage.getItem('listaCidades')) || []);
+        }
+
+        function carregarOpcoesSelecao() {
+            const selectInterno = document.getElementById('tecnicoInterno');
+            const selectExterno = document.getElementById('tecnicoExterno');
+            const selectCidade = document.getElementById('cidade');
+
+            // Limpar opções existentes
+            selectInterno.innerHTML = '<option value="">Selecione</option>';
+            selectExterno.innerHTML = '<option value="">Selecione</option>';
+            selectCidade.innerHTML = '<option value="">Selecione</option>';
+
+            // Carregar usuários internos
+            const usuariosInternos = JSON.parse(localStorage.getItem('listaUsuariosInternos')) || [];
+            usuariosInternos.forEach(usuario => {
+                const option = document.createElement('option');
+                option.value = usuario;
+                option.textContent = usuario;
+                selectInterno.appendChild(option);
+            });
+
+            // Carregar usuários externos
+            const usuariosExternos = JSON.parse(localStorage.getItem('listaUsuariosExternos')) || [];
+            usuariosExternos.forEach(usuario => {
+                const option = document.createElement('option');
+                option.value = usuario;
+                option.textContent = usuario;
+                selectExterno.appendChild(option);
+            });
+
+            // Carregar cidades
+            const cidades = JSON.parse(localStorage.getItem('listaCidades')) || [];
+            cidades.forEach(cidade => {
+                const option = document.createElement('option');
+                option.value = cidade;
+                option.textContent = cidade;
+                selectCidade.appendChild(option);
+            });
+        }
+
+        // Carregar dados de gerenciamento ao iniciar (se já existirem)
+        carregarDadosGerenciamento();
+        // Mostrar a tela de cadastro por padrão
+        mostrarTela('cadastro');
+    </script>
+</body>
+</html>
